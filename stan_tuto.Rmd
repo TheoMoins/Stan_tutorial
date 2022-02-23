@@ -1,0 +1,117 @@
+---
+title: "rstan_tuto"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  comment = NA, 
+  cache = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  message = FALSE,
+  dev = c("png", "pdf")
+)
+options(width = 100)
+
+library("rstan")
+library("mcmc")
+```
+
+# A first basic example
+
+```{r, warning=FALSE}
+writeLines(readLines("mvn.stan"))
+```
+
+```{r, warning=FALSE}
+fit_mvn <- stan(file = "mvn.stan",
+                data = list(d=10), algorithm = "HMC",
+                iter = 400, chains = 4, refresh = 0)
+fit_mvn
+```
+
+# Bayesian logistic regression
+
+\begin{equation*}
+    \boldsymbol{\beta} \sim \mathcal{N}(0, 0.35^2. \boldsymbol{I}_4), \quad
+    y_j \sim \text{Bernoulli}\left(\frac{1}{1+e^{-\boldsymbol{x}_j^\top\boldsymbol{\beta}}}\right).
+\end{equation*}
+
+
+```{r, warning=FALSE}
+writeLines(readLines("logit_reg.stan"))
+```
+
+We run Stan using the dataset \texttt{logit} available in the package \texttt{mcmc}.
+
+```{r, warning=FALSE, message=FALSE, override = FALSE}
+data("logit")
+
+logit_data<- list(D = 4,
+                  N = 100,
+                  tau = 0.35,
+                  x = logit[c("x1", "x2", "x3", "x4")],
+                  y = logit[["y"]])
+
+fit_logit <- stan(file = "logit_reg.stan",
+                  data=logit_data, algorithm = "HMC",
+                  iter=400, chains=4, refresh=0)
+fit_logit
+```
+
+
+# Hierarchical model: Eight Schools
+
+
+```{r}
+eight_schools <- list(J = 8,
+                      y = c(28,  8, -3,  7, -1,  1, 18, 12),
+                      sigma = c(15, 10, 16, 11,  9, 11, 10, 18))
+```
+
+\begin{tabular}{ll}
+    \textbf{Example~\ref{fig:hierarchical}.a:} & Centered parameterisation (CP) \\[0.1cm]
+    & $\theta_j \sim \mathcal{N}(\mu,\tau), \quad 
+    y_j \sim \mathcal{N}(\theta_j,\sigma^2_j)$.\\[0.2cm]
+    \textbf{Example~\ref{fig:hierarchical}.b:} & Non-centered parameterisation (NCP) \\[0.1cm]
+    & $\bar{\theta}_j \sim \mathcal{N}(0,1), \quad 
+    \theta_j = \mu + \tau \bar{\theta}_j, \quad y_j \sim \mathcal{N}(\theta_j,\sigma^2_j)$.\\[0.2cm]
+\end{tabular}
+
+
+## Centered model
+
+
+```{r, warning=FALSE}
+writeLines(readLines("eight_schools_cp.stan"))
+```
+
+
+```{r, warning=FALSE}
+fit_cp <- stan(
+  file = "eight_schools_cp.stan", data = eight_schools,
+  iter = 2000, chains = 4, refresh = 0
+)
+
+fit_cp
+```
+
+### Non-centered model
+
+```{r}
+writeLines(readLines("eight_schools_ncp.stan"))
+```
+
+```{r, warning=FALSE}
+fit_ncp2 <- stan(
+  file = "eight_schools_ncp.stan", data = eight_schools,
+  iter = 2000, chains = 4, refresh = 0
+)
+
+fit_ncp2
+```
+
+
+
+
