@@ -27,7 +27,8 @@ writeLines(readLines("mvn.stan"))
 ```{r, warning=FALSE}
 fit_mvn <- stan(file = "mvn.stan",
                 data = list(d=10), algorithm = "HMC",
-                iter = 400, chains = 4, refresh = 0)
+                iter = 400, warmup = 200, 
+                chains = 4, refresh = 0)
 fit_mvn
 ```
 
@@ -45,9 +46,15 @@ writeLines(readLines("logit_reg.stan"))
 
 We run Stan using the dataset \texttt{logit} available in the package \texttt{mcmc}.
 
+
 ```{r, warning=FALSE, message=FALSE, override = FALSE}
 data("logit")
 
+head(logit)
+```
+
+
+```{r, warning=FALSE, message=FALSE, override = FALSE}
 logit_data<- list(D = 4,
                   N = 100,
                   tau = 0.35,
