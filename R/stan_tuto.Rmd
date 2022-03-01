@@ -26,11 +26,22 @@ writeLines(readLines("mvn.stan"))
 
 ```{r, warning=FALSE}
 fit_mvn <- stan(file = "mvn.stan",
-                data = list(d=10), algorithm = "HMC",
+                data = list(d=8), algorithm = "HMC",
                 iter = 400, warmup = 200, 
                 chains = 4, refresh = 0)
 fit_mvn
 ```
+
+```{r, warning=FALSE}
+stan_plot(fit_mvn)
+stan_trace(fit_mvn)
+stan_hist(fit_mvn)
+stan_dens(fit_mvn)
+stan_diag(fit_mvn)
+stan_rhat(fit_mvn)
+stan_ess(fit_mvn)
+```
+
 
 # Bayesian logistic regression
 
@@ -66,7 +77,15 @@ fit_logit <- stan(file = "logit_reg.stan",
                   iter=400, chains=4, refresh=0)
 fit_logit
 ```
-
+```{r, warning=FALSE}
+stan_plot(fit_logit)
+stan_trace(fit_logit)
+stan_hist(fit_logit)
+stan_dens(fit_logit)
+stan_diag(fit_logit)
+stan_rhat(fit_logit)
+stan_ess(fit_logit)
+```
 
 # Hierarchical model: Eight Schools
 
@@ -98,10 +117,20 @@ writeLines(readLines("eight_schools_cp.stan"))
 ```{r, warning=FALSE}
 fit_cp <- stan(
   file = "eight_schools_cp.stan", data = eight_schools,
-  iter = 2000, chains = 4, refresh = 0
+  iter = 1000, chains = 4, refresh = 0
 )
 
 fit_cp
+```
+
+```{r, warning=FALSE}
+stan_plot(fit_cp)
+stan_trace(fit_cp)
+stan_hist(fit_cp)
+stan_dens(fit_cp)
+stan_diag(fit_cp)
+stan_rhat(fit_cp)
+stan_ess(fit_cp)
 ```
 
 ### Non-centered model
@@ -111,14 +140,21 @@ writeLines(readLines("eight_schools_ncp.stan"))
 ```
 
 ```{r, warning=FALSE}
-fit_ncp2 <- stan(
+fit_ncp <- stan(
   file = "eight_schools_ncp.stan", data = eight_schools,
-  iter = 2000, chains = 4, refresh = 0
+  iter = 1000, chains = 4, refresh = 0
 )
 
-fit_ncp2
+fit_ncp
 ```
 
 
-
-
+```{r, warning=FALSE}
+stan_plot(fit_ncp)
+stan_trace(fit_ncp)
+stan_hist(fit_ncp)
+stan_dens(fit_ncp)
+stan_diag(fit_ncp)
+stan_rhat(fit_ncp)
+stan_ess(fit_ncp)
+```
